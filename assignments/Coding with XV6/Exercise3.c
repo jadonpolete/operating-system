@@ -1,0 +1,45 @@
+// Jadon Polete
+// CS 380
+// Exercise 3 Metadata Inspector
+
+#include <stdio.h>
+#include <sys/stat.h>
+#include <stdlib.h>
+
+void inspect_file(const char* filepath) {
+    struct stat file_stat;
+
+    printf("Inspecting: %s\n", filepath);
+
+    // Call stat
+    if (stat(filepath, &file_stat) == -1) {
+        perror("stat");
+        return;
+    }
+
+    // Print file size
+    printf("Size: %lld bytes\n", (long long)file_stat.st_size);
+
+    // Check type
+    if (S_ISDIR(file_stat.st_mode)) {
+        printf("Type: Directory\n");
+    } else if (S_ISREG(file_stat.st_mode)) {
+        printf("Type: Regular file\n");
+    } else {
+        printf("Type: Other\n");
+    }
+}
+
+int main() {
+    FILE *f = fopen("test.txt", "w");
+    if (f) {
+        fputs("Hello File System!", f);
+        fclose(f);
+    }
+
+    inspect_file("test.txt");
+    inspect_file(".");
+    inspect_file("does_not_exist.bin");
+
+    return 0;
+}
